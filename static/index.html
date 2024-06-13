@@ -8,10 +8,14 @@
 </head>
 <body>
     <h1>Your Book Shelf</h1>
+    <form action="/api/books/newbook" method="get">
+        <button>Add New Book</button>
+    </form>
+    
     {{ range . }}
     <div>
         <h3>Book #{{ .ID }} - {{ .Title }}</h3>
-        <form action="/api/books/{{ .ID }}" method="get">
+        <form action="/api/books/:{{ .ID }}" method="get">
             <button>View Details</button>
         </form>
     </div>

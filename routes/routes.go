@@ -62,7 +62,35 @@ func (h *Handler) GetBookByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) AddNewBook(w http.ResponseWriter, r *http.Request) {}
+func (h *Handler) NewBookForm(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	err := h.Template.ExecuteTemplate(w, "new_book.html", nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+}
+
+func (h *Handler) AddNewBook(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	title := r.FormValue("title")
+	author := r.FormValue("author")
+	genre := r.FormValue("genre")
+	year, _ := strconv.Atoi(r.FormValue("year"))
+
+	db := h.BookDB.GetDB()
+	err := model.AddNewBook(db, title, author, genre, year)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	http.Redirect(w, r, "/api/books", http.StatusSeeOther)
+}
 
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {}
 
