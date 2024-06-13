@@ -56,3 +56,32 @@ func GetBookByID(db *sql.DB, bookID uint) (*Book, error) {
 
 	return &book, nil
 }
+
+func AddNewBook(db *sql.DB, title, author, genre string, year int) error {
+	ps, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	insertStatement := `
+		INSERT INTO book(title, author, genre, published_year) VALUES(?,?,?,?)
+	`
+
+	statement, err := db.Prepare(insertStatement)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(title, author, genre, year)
+	if err != nil {
+		return err
+	}
+
+	err = ps.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
