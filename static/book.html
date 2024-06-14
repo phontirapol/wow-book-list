@@ -14,5 +14,9 @@
         <h3>Genre: {{ .Genre }}</h3>
         <h3>Year: {{ .PublishedYear }}</h3>
     </div>
+
+    <form action="/api/books/:{{ .ID }}/edit" method="get">
+        <button>Edit</button>
+    </form>
 </body>
 </html>

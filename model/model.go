@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"encoding/json"
 )
 
 type Book struct {
@@ -9,7 +10,7 @@ type Book struct {
 	Title         string `json:"title"`
 	Author        string `json:"author"`
 	Genre         string `json:"genre"`
-	PublishedYear int    `json:"published_year"`
+	PublishedYear int    `json:"published_year,string"`
 }
 
 func GetAllBooks(db *sql.DB) ([]*Book, error) {
@@ -74,6 +75,42 @@ func AddNewBook(db *sql.DB, title, author, genre string, year int) error {
 	defer statement.Close()
 
 	_, err = statement.Exec(title, author, genre, year)
+	if err != nil {
+		return err
+	}
+
+	err = ps.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateBook(db *sql.DB, bookID uint, bookData []byte) error {
+	book := Book{ID: bookID}
+	err := json.Unmarshal(bookData, &book)
+	if err != nil {
+		return err
+	}
+
+	ps, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	updateStatement := `
+		UPDATE book 
+		SET title = ?, author = ?, genre = ?, published_year = ?
+		WHERE book_id = ?
+	`
+	statement, err := db.Prepare(updateStatement)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(book.Title, book.Author, book.Genre, book.PublishedYear, book.ID)
 	if err != nil {
 		return err
 	}
