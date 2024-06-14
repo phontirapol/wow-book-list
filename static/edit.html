@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+</head>
+<body>
+    <h1>Edit Details for Book #{{ .ID }}</h1>
+    <form id="edit-form" onsubmit="sendPUT()">
+        <label for="title">Title:</label><br>
+        <textarea name="title" id="" cols="20" rows="1">{{ .Title }}</textarea><br><br>
+
+        <label for="author">Author:</label><br>
+        <textarea name="author" id="" cols="20" rows="1">{{ .Author }}</textarea><br><br>
+
+        <label for="genre">Genre:</label><br>
+        <textarea name="genre" id="" cols="20" rows="1">{{ .Genre }}</textarea><br><br>
+
+        <label for="year">Year:</label><br>
+        <textarea name="year" id="" cols="20" rows="1">{{ .PublishedYear }}</textarea><br><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        function sendPUT() {
+            let url = "/api/books/:{{ .ID }}"
+
+            let payload = {
+                title: document.getElementsByName("title")[0].value,
+                author: document.getElementsByName("author")[0].value,
+                genre: document.getElementsByName("genre")[0].value,
+                published_year: document.getElementsByName("year")[0].value
+            }
+
+            let options = {
+                method: "PUT",
+                body: JSON.stringify(payload)
+            }
+
+            fetch(url, options)
+            .then(response => console.log(response.status))
+
+            document.getElementById("edit-form").action = url
+            document.getElementById("edit-form").method = "GET"
+        }
+    </script>
+</body>
+</html>
