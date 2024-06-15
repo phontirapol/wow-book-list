@@ -122,3 +122,32 @@ func UpdateBook(db *sql.DB, bookID uint, bookData []byte) error {
 
 	return nil
 }
+
+func DeleteBook(db *sql.DB, bookID uint) error {
+	ps, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	deleteStatement := `
+		DELETE FROM book WHERE book_id = ?
+	`
+
+	statement, err := db.Prepare(deleteStatement)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	_, err = statement.Exec(bookID)
+	if err != nil {
+		return err
+	}
+
+	err = ps.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

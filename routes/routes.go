@@ -135,10 +135,28 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	db := h.BookDB.GetDB()
 	err = model.UpdateBook(db, uint(bookID), bookData)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
 }
 
-func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {}
+func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	bookIDstr := mux.Vars(r)["bookID"]
+	bookID, err := strconv.ParseUint(bookIDstr, 10, 32)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid ID"))
+		return
+	}
+
+	db := h.BookDB.GetDB()
+	err = model.DeleteBook(db, uint(bookID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+}

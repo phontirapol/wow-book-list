@@ -34,7 +34,7 @@ func initRouter(bookDB db.BookDBInterface, template templates.TemplateInterface)
 	router.HandleFunc("/api/books", handler.AddNewBook).Methods(POST)
 	router.HandleFunc("/api/books/:{bookID}/edit", handler.EditBookForm).Methods(GET)
 	router.HandleFunc("/api/books/:{bookID}", handler.UpdateBook).Methods(PUT)
-	// router.HandleFunc("/api/books/{bookID}", handler.DeleteBook).Methods(DELETE)
+	router.HandleFunc("/api/books/:{bookID}", handler.DeleteBook).Methods(DELETE)
 
 	return router
 }
